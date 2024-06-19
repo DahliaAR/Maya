@@ -39,11 +39,20 @@ for message in st.session_state.messages: # Display the prior chat messages
     with st.chat_message(message["role"]):
         st.write(message["content"])
 
+def generate_empathetic_response(user_input):
+    if "angry" in user_input.lower() or "frustrated" in user_input.lower():
+        response_prefix = "I'm sorry to hear you're feeling this way. "
+        response_suffix = " Let's work together to resolve this."
+        response = conversation.predict(input=user_input)
+        return response_prefix + response + response_suffix
+    else:
+        return conversation.predict(input=user_input)
+
 # If last message is not from assistant, generate a new response
 if st.session_state.messages[-1]["role"] != "assistant":
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
-            response = conversation.predict(input = prompt)
+            response = generate_empathetic_response(prompt)
             st.write(response)
             message = {"role": "assistant", "content": response}
             st.session_state.messages.append(message) # Add response to message history
